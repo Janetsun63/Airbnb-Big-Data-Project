@@ -1,11 +1,16 @@
 
 """
 Extract points of interest in the Greater Vancouver area from 
-the splitted OSM dataset. The dataset is also available on 
-the computing cluster.
+the splitted OSM dataset.
 
 How to use it:
-    - spark-submit osm_extractor.py /courses/datasets/openstreetmaps osm_vancouver_data
+    spark-submit osm_02_extractor.py [input folder] [output folder]
+
+Example:
+    spark-submit osm_02_extractor.py /courses/datasets/openstreetmaps osm_vancouver_data
+
+Note:
+    - The dataset is also available on the computing cluster.
 """
 
 
