@@ -1,10 +1,18 @@
 
 """
-Combine the extracted osm data files into one json file. This
-step is optional.
+Combine the extracted osm data files into one uncompressed json 
+file to make it easier to work with.
+
+Note:
+    - This step is optional.
+    - If the extracted osm data files from the previous
+      step are large, DO NOT run this step.
 
 How to use it:
-    - spark-submit osm_combiner.py ../datasets/osm_vancouver_data/ ../datasets/osm_vancouver_data.json
+    spark-submit osm_03_combiner.py [input data folder] [output data file name]
+
+Example:
+    spark-submit ./src/osm_03_combiner.py ./datasets/osm_vancouver_data/ ./datasets/osm_vancouver_data.json
 """
 
 
