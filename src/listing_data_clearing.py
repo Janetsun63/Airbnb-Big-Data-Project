@@ -67,8 +67,13 @@ def is_avaliable(available):
 
 @functions.udf(returnType=types.IntegerType())
 def amenities_value(lines):
-	ls = lines.replace("[","").replace("]","").split(", ")
-	return len(ls)
+	ame = ['wifi' ,'alarm'   ,'kitchen'  ,'essentials'  ,'long term stays allowed' ,'hangers' ,'hair dryer'  ,'washer' ,'hot water'  ,'dryer' , 'iron' ,'shampoo' ,'dishes' ,'workspace' ,'refrigerator' ,'fire extinguisher'  ,'microwave' ,'coffee' ,'park' ,'tv' ]	
+	lines = lines.lower()
+	count = 0
+	for i in ame:
+		if lines.find(i)>=0:
+			count +=1
+	return count
 
 @functions.udf(returnType=types.IntegerType())
 def is_have(type, word):
@@ -106,75 +111,13 @@ def main(air_inputs,cal_inputs, osm_inputs, output):
 	calendar = calendar.withColumnRenamed("listing_id","id")
 		
 	d1= airbnb.select('id', 'host_since','neighbourhood_cleansed', 'room_type', 'accommodates', 'bathrooms_text','beds', 'amenities','price', 'availability_365', )
-	d2 = d1.withColumn('amenities', amenities_value(d1['amenities'])).withColumn('baths', bath_count(airbnb['bathrooms_text'])).withColumn('occupancy_rate', get_occupancy(airbnb['availability_365'])).withColumn('price',get_price(airbnb['price'])).withColumn('days', yeartoday(airbnb['host_since']))
-	df = d2.select('id','accommodates', 'baths','beds','days','occupancy_rate','price','amenities').cache()
+	d2 = d1.withColumn('amenities', amenities_value(airbnb['amenities'])).withColumn('baths', bath_count(airbnb['bathrooms_text'])).withColumn('occupancy_rate', get_occupancy(airbnb['availability_365'])).withColumn('price',get_price(airbnb['price'])).withColumn('days', yeartoday(airbnb['host_since']))
+	df = d2.select('id','neighbourhood_cleansed','room_type','accommodates', 'baths','beds','days','occupancy_rate','price','amenities').cache()
 	df = osm.join(df, 'id')
-	room_type = d1.select('id', 'room_type')\
-		.withColumn('t1',lit('Entire'))\
-		.withColumn('t2',lit('Private'))\
-		.withColumn('t3',lit('Shared'))\
-		.withColumn('t4',lit('Hotel'))
-	room_bional = room_type.select("id", \
-		is_have('room_type', 't1').alias('room_Entire'),\
-		is_have('room_type', 't2').alias('room_Private'),\
-		is_have('room_type', 't3').alias('room_Shared'),\
-		is_have('room_type', 't4').alias('room_Hotel'),\
-	)
-	df = df.join(room_bional,'id').cache()
-	neigh_type = d1.select('id','neighbourhood_cleansed')\
-		.withColumn('Arbutus Ridge',lit('Arbutus Ridge'))\
-		.withColumn('Downtown',lit('Downtown'))\
-		.withColumn('Downtown Eastside',lit('Downtown Eastside'))\
-		.withColumn('Dunbar Southlands',lit('Dunbar Southlands'))\
-		.withColumn('Fairview',lit('Fairview'))\
-		.withColumn('Grandview-Woodland',lit('Grandview-Woodland'))\
-		.withColumn('Hastings-Sunrise',lit('Hastings-Sunrise'))\
-		.withColumn('Kensington-Cedar Cottage',lit('Kensington-Cedar Cottage'))\
-		.withColumn('Kerrisdale',lit('Kerrisdale'))\
-		.withColumn('Killarney',lit('Killarney'))\
-		.withColumn('Kitsilano',lit('Kitsilano'))\
-		.withColumn('Marpole',lit('Marpole'))\
-		.withColumn('Mount Pleasant',lit('Mount Pleasant'))\
-		.withColumn('Oakridge',lit('Oakridge'))\
-		.withColumn('Renfrew-Collingwood',lit('Renfrew-Collingwood'))\
-		.withColumn('Riley Park',lit('Riley Park'))\
-		.withColumn('Shaughnessy',lit('Shaughnessy'))\
-		.withColumn('South Cambie',lit('South Cambie'))\
-		.withColumn('Strathcona',lit('Strathcona'))\
-		.withColumn('Sunset',lit('Sunset'))\
-		.withColumn('Victoria-Fraserview',lit('Victoria-Fraserview'))\
-		.withColumn('West End',lit('West End'))\
-		.withColumn('West Point Grey',lit('West Point Grey'))
-	neigh_binoal = neigh_type.select('id',\
-		is_have('neighbourhood_cleansed', 'Arbutus Ridge').alias('Arbutus Ridge'),\
-		is_have('neighbourhood_cleansed', 'Downtown').alias('Downtown'),\
-		is_have('neighbourhood_cleansed', 'Downtown Eastside').alias('Downtown Eastside'),\
-		is_have('neighbourhood_cleansed', 'Dunbar Southlands').alias('Dunbar Southlands'),\
-		is_have('neighbourhood_cleansed', 'Fairview').alias('Fairview'),\
-		is_have('neighbourhood_cleansed', 'Grandview-Woodland').alias('Grandview-Woodland'),\
-		is_have('neighbourhood_cleansed', 'Hastings-Sunrise').alias('Hastings-Sunrise'),\
-		is_have('neighbourhood_cleansed', 'Kensington-Cedar Cottage').alias('Kensington-Cedar Cottage'),\
-		is_have('neighbourhood_cleansed', 'Kerrisdale').alias('Kerrisdale'),\
-		is_have('neighbourhood_cleansed', 'Killarney').alias('Killarney'),\
-		is_have('neighbourhood_cleansed', 'Kitsilano').alias('Kitsilano'),\
-		is_have('neighbourhood_cleansed', 'Marpole').alias('Marpole'),\
-		is_have('neighbourhood_cleansed', 'Mount Pleasant').alias('Mount Pleasant'),\
-		is_have('neighbourhood_cleansed', 'Oakridge').alias('Oakridge'),\
-		is_have('neighbourhood_cleansed', 'Renfrew-Collingwood').alias('Renfrew-Collingwood'),\
-		is_have('neighbourhood_cleansed', 'Riley Park').alias('Riley Park'),\
-		is_have('neighbourhood_cleansed', 'Shaughnessy').alias('Shaughnessy'),\
-		is_have('neighbourhood_cleansed', 'South Cambie').alias('South Cambie'),\
-		is_have('neighbourhood_cleansed', 'Strathcona').alias('Strathcona'),\
-		is_have('neighbourhood_cleansed', 'Sunset').alias('Sunset'),\
-		is_have('neighbourhood_cleansed', 'Victoria-Fraserview').alias('Victoria-Fraserview'),\
-		is_have('neighbourhood_cleansed', 'West End').alias('West End'),\
-		is_have('neighbourhood_cleansed', 'West Point Grey').alias('West Point Grey'),\
-	)
-	df = df.join(neigh_binoal,'id')
-	
+		
 	
 	c1 = calendar.select(calendar['id'], is_avaliable(calendar['available']).alias('available')).cache()
-	feature_occupancy = c1.groupBy('id').agg(functions.avg(c1['available']).alias('feature_occupancy')).orderBy('id')
+	feature_occupancy = c1.groupBy('id').agg(functions.avg(c1['available']).alias('future_occupancy')).orderBy('id')
 	df = df.join(feature_occupancy,'id')
 	df.coalesce(1).write.option("header", "true").csv(output)
 	
