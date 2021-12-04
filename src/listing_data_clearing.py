@@ -6,7 +6,7 @@
 #This code working on create new numerical table to do prediction
 import sys
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
-import sys,os,uuid,gzip,re
+import sys,os,uuid,gzip,re,math
 
 from pyspark.sql import SparkSession, functions, types
 from datetime import datetime
@@ -43,7 +43,7 @@ def bath_count(bathrooms_text):
 @functions.udf(returnType=types.FloatType())
 def get_occupancy(availability_365):
 	days = int(availability_365)
-	occupancy = (365 - days)/365
+	occupancy = (30 - days)/30
 	occupancy = round(occupancy,3)
 	return occupancy
 	
@@ -81,6 +81,16 @@ def is_have(type, word):
 		return 1
 	else:
 		return 0
+
+@functions.udf(returnType=types.IntegerType())
+def is_bed_none(beds, acc):
+	if beds is not None:
+		beds= int(beds)
+	else:
+		acc = int(acc)
+		beds = int(math.ceil(acc/2))
+	return beds
+	
 	
 @functions.udf(returnType=types.StringType())
 def return_month(date):
@@ -88,47 +98,39 @@ def return_month(date):
 	month = str(date.month)
 	return month
 
-def main(air_inputs,cal_inputs, osm_inputs, output):
+def main(air_inputs, osm_inputs, output):
 	# main logic starts here
 	airbnb = spark.read.option("multiline", "true")\
 		.option("quote", '"')\
 		.option("header", "true")\
 		.option("escape", "\\")\
-		.option("escape", '"').csv(air_inputs)
+		.option("escape", '"').csv(air_inputs).repartition(40)
 	
 	osm = spark.read.option("multiline", "true")\
 		.option("quote", '"')\
 		.option("header", "true")\
 		.option("escape", "\\")\
 		.option("escape", '"').csv(osm_inputs)
-	osm = osm.withColumnRenamed("listing_id","id")
-	
-	calendar = spark.read.option("multiline", "true")\
-		.option("quote", '"')\
-		.option("header", "true")\
-		.option("escape", "\\")\
-		.option("escape", '"').csv(cal_inputs).cache()
-	calendar = calendar.withColumnRenamed("listing_id","id")
-		
-	d1= airbnb.select('id', 'host_since','neighbourhood_cleansed', 'room_type', 'accommodates', 'bathrooms_text','beds', 'amenities','price', 'availability_365', )
-	d2 = d1.withColumn('amenities', amenities_value(airbnb['amenities'])).withColumn('baths', bath_count(airbnb['bathrooms_text'])).withColumn('occupancy_rate', get_occupancy(airbnb['availability_365'])).withColumn('price',get_price(airbnb['price'])).withColumn('days', yeartoday(airbnb['host_since']))
-	df = d2.select('id','neighbourhood_cleansed','room_type','accommodates', 'baths','beds','days','occupancy_rate','price','amenities').cache()
+	osm = osm.withColumnRenamed("listing_id","id").repartition(40)
+			
+	d1= airbnb.select('id', 'latitude','longitude','host_since','neighbourhood_cleansed', 'room_type', 'accommodates', 'bathrooms_text','beds', 'amenities','price', 'availability_30' )
+	d2 = d1.withColumn('amenities', amenities_value(airbnb['amenities'])).withColumn('baths', bath_count(airbnb['bathrooms_text'])).withColumn('beds', is_bed_none(airbnb['beds'],airbnb['accommodates'])).withColumn('price',get_price(airbnb['price'])).withColumn('days', yeartoday(airbnb['host_since'])).withColumn('future_occupancy', get_occupancy(airbnb['availability_30']))
+	df = d2.select('id','neighbourhood_cleansed','room_type','accommodates', 'baths','beds','days','amenities','price','future_occupancy').cache()
 	df = osm.join(df, 'id')
-		
+	area = d2.select('id','latitude','longitude')
+	df = area.join(df, 'id')
 	
-	c1 = calendar.select(calendar['id'], is_avaliable(calendar['available']).alias('available')).cache()
-	feature_occupancy = c1.groupBy('id').agg(functions.avg(c1['available']).alias('future_occupancy')).orderBy('id')
-	df = df.join(feature_occupancy,'id')
+	
 	df.coalesce(1).write.option("header", "true").csv(output)
 	
 if __name__ == '__main__':
 	air_inputs = sys.argv[1]
-	cal_inputs = sys.argv[2]
-	osm_inputs = sys.argv[3]
 	
-	output = sys.argv[4]
+	osm_inputs = sys.argv[2]
+	
+	output = sys.argv[3]
 	spark = SparkSession.builder.appName('airbnb data clearing').getOrCreate()
 	assert spark.version >= '3.0' # make sure we have Spark 3.0+
 	spark.sparkContext.setLogLevel('WARN')
 	sc = spark.sparkContext
-	main(air_inputs,cal_inputs, osm_inputs, output)
+	main(air_inputs, osm_inputs, output)
