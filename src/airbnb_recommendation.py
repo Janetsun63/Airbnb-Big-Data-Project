@@ -1,3 +1,7 @@
+'''
+runuing in terminal as: spark-submit airbnb_recommendation.py review_scores.csv output 10349410
+
+'''
 import sys
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 import os
@@ -82,12 +86,12 @@ def main(inputs, output, userid):
     test_RMSE = evaluator.evaluate(predictions_test)
     print('The model had a RMSE on the test set of {0}'.format(test_RMSE))
     # generate 3 listing recommendations for all users
-    recommendations = best_model.recommendForAllUsers(3)
+    recommendations = best_model.recommendForAllUsers(10)
     recommendations1 = recommendations.withColumn("rec_exp", functions.explode("recommendations"))\
         .select('reviewer_id', functions.col("rec_exp.listing_id"), functions.col("rec_exp.rating"))
     recommendations2 = recommendations1.filter(recommendations1.reviewer_id == userid)
-    recommendations2.coalesce(1).write.option("header", "true").csv(output+'/recommendations'+userid, mode='overwrite')
-
+    recommendations2.coalesce(1).write.option("header", "true").csv(output+'/recommendations '+str(userid), mode='overwrite')
+   
 
 
 if __name__ == '__main__':
