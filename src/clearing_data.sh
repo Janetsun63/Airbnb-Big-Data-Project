@@ -10,7 +10,7 @@ if [[ $var -eq 2 ]];
 then
 	${SPARK_HOME}/bin/spark-submit ${path}/osm_04_extract_features.py ${data_path}/osm_vancouver_data.json ${data_path}/osm_features
 	${SPARK_HOME}/bin/spark-submit ${path}/calc_osm_airbnb_distances.py ${data_path}/osm_features/ ${data_path}/listings.csv ${data_path}/distances
-	${SPARK_HOME}/bin/spark-submit ${path}/listing_data_clearing.py ${data_path}/listings.csv ${data_path}/calendar.csv ${data_path}/distances ${data_path}/airbnb_out
+	${SPARK_HOME}/bin/spark-submit ${path}/listing_data_clearing.py ${data_path}/listings.csv ${data_path}/distances ${data_path}/airbnb_out
 	
 else
 	spark-submit ${path}/osm_04_extract_features.py ${data_path}/osm_vancouver_data.json ${data_path}/osm_features
