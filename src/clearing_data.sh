@@ -1,3 +1,4 @@
+echo "Please put all you code in a directory and all dataset in a directory\n"
 echo "Please enter the path you of all your python code(e.g. /Users/airbnb/src)"
 read path
 
@@ -23,5 +24,3 @@ rm -r ${data_path}/distances
 rm -r ${data_path}/osm_features
 
 echo "Your final clearing data saved at ${data_path}/airbnb_out"
-#/Users/jennifer/Downloads/2021fall/732/project
-#/Users/jennifer/Downloads/2021fall/732/project/calendar
