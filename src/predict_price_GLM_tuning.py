@@ -39,7 +39,7 @@ def main(inputs):
 
     # Distribution of price is right-skewed
     # Take the log the make it normal
-    data = data.withColumn('log_price', functions.log(data['price']))
+    data = data.withColumn('price', functions.log(data['price']))
 
     train, validation = data.randomSplit([0.8, 0.2])
     train = train.cache()
@@ -56,11 +56,10 @@ def main(inputs):
             'id', 
             'neighbourhood_cleansed', 
             'room_type', 
-            'price', 
-            'future_occupancy'
+            'price'
         ])
     ) + ['neighbourhood_index', 'room_type_index']
-    label_column = 'log_price'
+    label_column = 'price'
 
     input_assembler = VectorAssembler(
         inputCols = input_column_lst, 
