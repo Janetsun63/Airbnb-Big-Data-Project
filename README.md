@@ -11,6 +11,7 @@
   spark-submit visualization_listings.py listings.csv out_dir
   
   - Getting the monthly price for Airbnb\
+  Please make sure all of your datasets are saved in 1 file
   run : sh  monthly_price_cluster.sh  #get all the price\
   OR you can run : spark-submit monthly_price.py calendar_4-12.csv 4 #get each monthly price
   
@@ -19,7 +20,7 @@
   OR you can run \
   spark-submit osm_04_extract_features.py [input folder/file] [output folder]\
   spark-submit ./src/calc_osm_airbnb_distances.py [OSM-feature dataset] [Airbnb raw dataset] [Output folder]\
-  spark-submit listing_data_clearing.py listings.csv calendar.csv [Output folder from calc_osm_airbnb_distances.py ] out_dir
+  spark-submit listing_data_clearing.py listings.csv  [Output folder from calc_osm_airbnb_distances.py ] out_dir
 
   - Sentiment analysis on reviews data  \
   run: spark-submit reviews_sentiment.py reviews.csv out_dir
