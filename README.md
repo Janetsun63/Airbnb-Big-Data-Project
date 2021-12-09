@@ -27,7 +27,9 @@
   - Get recommendation for a input userid \
   run: spark-submit airbnb_recommendation.py review_scores.csv output 10349410 \
   Some other userids can be used for testing: \
-  146224, 1676647, 5028719, 6000823, 7480215
+  146224, 1676647, 5028719, 6000823, 7480215\
+
+  - pip3 install nltk, textblob, langid
   
 - `./plots/`: Generated plots and images to be used in the report
 
