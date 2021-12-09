@@ -21,12 +21,12 @@
   spark-submit ./src/calc_osm_airbnb_distances.py [OSM-feature dataset] [Airbnb raw dataset] [Output folder]\
   spark-submit listing_data_clearing.py listings.csv calendar.csv [Output folder from calc_osm_airbnb_distances.py ] out_dir
 
-  - Sentiment analysis on reviews data
+  - Sentiment analysis on reviews data  \
   run: spark-submit reviews_sentiment.py reviews.csv out_dir
 
-  - Get recommendation for a input userid
-  run: spark-submit airbnb_recommendation.py review_scores.csv output 10349410
-  Some other userids can be used for testing:
+  - Get recommendation for a input userid \
+  run: spark-submit airbnb_recommendation.py review_scores.csv output 10349410 \
+  Some other userids can be used for testing: \
   146224, 1676647, 5028719, 6000823, 7480215
   
 - `./plots/`: Generated plots and images to be used in the report
