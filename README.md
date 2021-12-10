@@ -1,6 +1,6 @@
 # Airbnb Big Data Project
 
-[TOC]
+In this project, we have two target groups: the hosts that plan to rent out their properties on Airbnb and the Airbnb users who want to book properties. The purpose of this project is to analyze the residential housing data and listing reviews data in Vancouver from Inside Airbnb to develop two tools: a price optimization tool to help Airbnb hosts to maximize their profits,  and a recommendation engine to facilitate the Airbnb users to find their favorable listings. With this price optimization tool, we will be able to predict how the occupancy rate of a residential property in a certain city will change with respect to its price, so that when house owners provide us with their housing information, we can help them to decide what range of price may potentially yield the maximum monthly profit. The recommender system will recommend 10 property listings to each user based on their past listing reviews when provided with the user’s id.
 
 ## Project Folder Structure
 
