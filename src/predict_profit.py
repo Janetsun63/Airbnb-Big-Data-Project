@@ -139,10 +139,9 @@ get_prediction_api(dict):
 def get_prediction_api(param: dict):
 
     location = geocode(param['address'])
-    lat, lon = location.latitude, location.longitude
-
     if not location:
-        return None
+        return pd.DataFrame({'price': [], 'future_occupancy': [], 'profit': []})
+    lat, lon = location.latitude, location.longitude
 
     lat_lon_paris = osm_feature.join(spark.createDataFrame([{
         'dummy_id': 'dummy_id', 
