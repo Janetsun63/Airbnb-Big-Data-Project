@@ -1,4 +1,6 @@
 '''
+Recommend 10 listings to a given userid
+
 runuing in terminal as: spark-submit airbnb_recommendation.py review_scores.csv output 10349410
 
 '''
@@ -89,7 +91,7 @@ def main(inputs, output, userid):
     print('The model had a RMSE on the test set of {0}'.format(test_RMSE))
     # The model had a RMSE on the test set of 1.5688065726761427
 
-    # generate 3 listing recommendations for all users
+    # generate 10 listing recommendations for all users
     recommendations = best_model.recommendForAllUsers(10)
     recommendations1 = recommendations.withColumn("rec_exp", functions.explode("recommendations"))\
         .select('reviewer_id', functions.col("rec_exp.listing_id"), functions.col("rec_exp.rating"))
