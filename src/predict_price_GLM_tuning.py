@@ -1,5 +1,9 @@
 
 
+"""
+time spark-submit ./src/predict_price_GLM_tuning.py ./datasets/cleaned_listing.csv
+"""
+
 import sys
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
 from pyspark.sql import SparkSession, functions, types, Row
@@ -111,14 +115,9 @@ def main(inputs):
     print("Best Param (maxIter): %g" % best_model.stages[-1].getMaxIter())
     print("Best Param (regParam): %g" % best_model.stages[-1].getRegParam())
 
-    # Make predictions
-    predictions = best_model.transform(validation)
-    predictions.cache()
-
-    # Testing error
-    test_rmse = rmse_evaluator.evaluate(predictions)
-
-    print("Root Mean Squared Error (RMSE) on test data = %g" % test_rmse)
+    # Loss
+    print("RMSE on training data = %g" % rmse_evaluator.evaluate(best_model.transform(train)))
+    print("RMSE on testing data = %g" % rmse_evaluator.evaluate(best_model.transform(validation)))
 
 
 if __name__ == '__main__':
