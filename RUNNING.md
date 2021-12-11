@@ -34,7 +34,7 @@ For the simplicity of testing, we have included the resulting dataset from the a
 - **To get tables needed by visualization and plots**:
 
   ```bash
-  spark-submit ./src/visualization_listings.py ./datasets/listings.csv ./plots
+  spark-submit ./src/visualization_listings.py ./datasets/listings.csv ./datasets
   ```
 
 - **To get the monthly price**:
@@ -47,6 +47,12 @@ For the simplicity of testing, we have included the resulting dataset from the a
 
   ```bash
   spark-submit ./src/monthly_price.py ./datasets/calendar_4-12.csv 4
+  ```
+
+- **To get tables required by weather related analysis**:
+
+  ```bash
+  spark-submit ./src/weather.py ./datasets/weatherstats_vancouver_daily.csv [out_dir]
   ```
 
 
@@ -67,7 +73,7 @@ spark-submit ./src/predict_price_GLM_tuning.py ./datasets/cleaned_listing.csv
 
 **To test the saved regression model**:
 
-- Refer to `prediction_profit.ipynb` for further details
+- Refer to `prediction_profit.ipynb` or the **web application** for further details
 
 
 
