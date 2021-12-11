@@ -33,6 +33,7 @@ In this project, we have two target groups: the hosts that plan to rent out thei
   - pip3 install nltk, textblob, langid
   
 - `./plots/`: Generated plots and images to be used in the report
+- `./airbnb_webapp/`: UI & Visualization 
 
 
 
