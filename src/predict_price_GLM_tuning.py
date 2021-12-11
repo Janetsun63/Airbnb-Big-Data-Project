@@ -1,7 +1,11 @@
 
 
 """
-time spark-submit ./src/predict_price_GLM_tuning.py ./datasets/cleaned_listing.csv
+Tune and display optimal hyperparameters for the regression 
+model needed by the price optimization tool.
+
+How to use it:
+spark-submit ./src/predict_price_GLM_tuning.py ./datasets/cleaned_listing.csv
 """
 
 import sys

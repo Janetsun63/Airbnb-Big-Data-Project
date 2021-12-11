@@ -1,4 +1,10 @@
 
+"""
+Train and save the regression model for the price optimization tool.
+
+How to use it:
+spark-submit ./src/predict_price_GLM_train.py ./datasets/cleaned_listing.csv ./models/predict_price_GLM
+"""
 
 import sys
 assert sys.version_info >= (3, 5) # make sure we have Python 3.5+
